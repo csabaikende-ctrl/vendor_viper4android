@@ -1,0 +1,50 @@
+//
+// ViPER4Android RE: likelikeslike/ViPER4Android (app, GPL-3.0) and
+// likelikeslike/ViPERFX_RE (legacy effect driver, GPL-2.0), version 2.1.1.
+//
+
+soong_namespace {
+}
+
+// Legacy (effect_handle_t) audio effect driver, loaded by the HIDL audio
+// effect HAL from /vendor/lib{,64}/soundfx via audio_effects.xml.
+cc_prebuilt_library_shared {
+    name: "libv4a_re",
+    vendor: true,
+    relative_install_path: "soundfx",
+    compile_multilib: "both",
+    arch: {
+        arm64: {
+            srcs: ["prebuilt/lib/arm64/libv4a_re.so"],
+        },
+        arm: {
+            srcs: ["prebuilt/lib/arm/libv4a_re.so"],
+        },
+    },
+    shared_libs: ["liblog"],
+    strip: {
+        none: true,
+    },
+}
+
+// Upstream release APK, kept byte-identical (developer signature) so that
+// in-app updates from GitHub keep working.
+android_app_import {
+    name: "ViPER4Android",
+    apk: "prebuilt/app/ViPER4Android.apk",
+    preprocessed: true,
+    privileged: true,
+    product_specific: true,
+    dex_preopt: {
+        enabled: false,
+    },
+    required: ["privapp-permissions-viper4android"],
+}
+
+prebuilt_etc {
+    name: "privapp-permissions-viper4android",
+    product_specific: true,
+    sub_dir: "permissions",
+    src: "permissions/privapp-permissions-viper4android.xml",
+    filename_from_src: true,
+}
